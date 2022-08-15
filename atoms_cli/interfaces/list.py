@@ -20,10 +20,10 @@ class ListAtom:
 
     def run(self):
         rows = []
-        columns = ["Name", "Distribution", "Created", "Updated"]
+        columns = ["AID", "Name", "Distribution", "Created", "Updated"]
 
         if self.__args.type in ["container", "all"]:
-            columns += ["Container ID", "Container Image"]
+            columns += ["Container Image"]
         
         if self.__args.type == "all":
             columns += ["Type"]
@@ -31,8 +31,11 @@ class ListAtom:
         for atom in self.__atoms_backend.atoms.values():
             if self.__args.type == "container" and not atom.is_distrobox_container:
                 continue
-            
+            elif self.__args.type == "chroot" and atom.is_distrobox_container:
+                continue
+
             _row = [
+                atom.aid,
                 atom.name, 
                 atom.distribution.name,
                 atom.creation_date, 
@@ -41,12 +44,9 @@ class ListAtom:
 
             if self.__args.type in ["container", "all"]:
                 if atom.is_distrobox_container:
-                    _row += [
-                        atom.container_id, 
-                        atom.container_image
-                    ]
+                    _row += [atom.container_image]
                 else:
-                    _row += ["n/a", "n/a"]
+                    _row += ["n/a"]
 
             if self.__args.type == "all":
                 _row += [self.__get_atom_type(atom)]
