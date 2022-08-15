@@ -12,7 +12,7 @@ from atoms_cli.interfaces.create import CreateAtom
 class AtomsCLI:
 
     def __init__(self):
-        self.__atoms_backend = AtomsBackend()
+        self.__atoms_backend = AtomsBackend(distrobox_support=True)
         self.__parser = argparse.ArgumentParser(description='Atoms CLI')
         subparsers = self.__parser.add_subparsers(dest='command', help='sub-command help')
 
