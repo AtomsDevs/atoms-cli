@@ -64,9 +64,8 @@ class CreateAtom:
             sys.exit(1)
 
         if atom:
-            Print.stdout("{} New atom created: {} ({}).".format(
+            Print.stdout("New atom created: {} ({}).".format(
                 emojify_atom_name(atom), 
-                atom.name, 
                 atom.aid
             ))
     
