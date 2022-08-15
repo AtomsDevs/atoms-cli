@@ -33,27 +33,27 @@ class ListDistributions:
                     self.__filters[_filter] = self.__filter_types[_filter]
 
     def run(self):
-        results = []
+        rows = []
         columns = [column for column in self.__filters.values()]
 
         for distribution in AtomsDistributionsUtils.get_distributions():
-            __result = []
+            _row = []
 
             if "name" in self.__filters:
-                __result.append(distribution.name)
+                _row.append(distribution.name)
 
             if "releases" in self.__filters:
-                __result.append(", ".join(
+                _row.append(", ".join(
                     [release for release in distribution.releases]
                 ))
 
             if "architectures" in self.__filters:
-                __result.append(", ".join(
+                _row.append(", ".join(
                     [architecture for architecture in distribution.architectures.keys()]
                 ))
 
-            results.append(__result)
+            rows.append(_row)
 
-        Print.table(columns=columns, rows=results, exit=True)
+        Print.table(columns, rows, exit=True)
 
         
