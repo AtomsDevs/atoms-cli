@@ -16,5 +16,6 @@ setup(
     },
     install_requires=[
         'atoms-core',
+        'tabluate'
     ]
 )
