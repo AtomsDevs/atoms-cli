@@ -29,6 +29,9 @@ class ListAtom:
             columns += ["Type"]
         
         for atom in self.__atoms_backend.atoms.values():
+            if self.__args.type == "container" and not atom.is_distrobox_container:
+                continue
+            
             _row = [
                 atom.name, 
                 atom.distribution.name,
