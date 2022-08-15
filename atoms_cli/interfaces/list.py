@@ -1,6 +1,7 @@
 import sys
 
 from atoms_cli.utils.print import Print
+from atoms_cli.utils.generic import emojify_atom_name
 from atoms_cli.utils.atom_types import atom_types, str_atom_types
 
 
@@ -34,9 +35,10 @@ class ListAtom:
             elif self.__args.type == "chroot" and atom.is_distrobox_container:
                 continue
 
+            _name = atom.name
             _row = [
                 atom.aid,
-                atom.name, 
+                emojify_atom_name(atom),
                 atom.distribution.name,
                 atom.creation_date, 
                 atom.update_date
@@ -54,4 +56,3 @@ class ListAtom:
             rows.append(_row)
 
         Print.table(columns, rows, exit=True)
-

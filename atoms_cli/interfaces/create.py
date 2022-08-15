@@ -5,6 +5,7 @@ from atoms_core.utils.distribution import AtomsDistributionsUtils
 
 from atoms_cli.utils.print import Print
 from atoms_cli.utils.atom_types import atom_types
+from atoms_cli.utils.generic import emojify_atom_name
 
 
 class CreateAtom:
@@ -63,7 +64,11 @@ class CreateAtom:
             sys.exit(1)
 
         if atom:
-            Print.stdout("⚛️ New atom created: {} ({}).".format(atom.name, atom.aid))
+            Print.stdout("{} New atom created: {} ({}).".format(
+                emojify_atom_name(atom), 
+                atom.name, 
+                atom.aid
+            ))
     
     def __config_fn(self, status: int):
         if status == 0:
@@ -73,13 +78,13 @@ class CreateAtom:
 
     def __unpack_fn(self, status: int):
         if status == 0:
-            Print.stdout("🗳️ Unpacking image...", new_line=False)
+            Print.stdout("🗳️  Unpacking image...", new_line=False)
         elif status == 1:
             Print.stdout("Done.")
 
     def __finalizing_fn(self, status: int):
         if status == 0:
-            Print.stdout("🪄 Finalizing...", new_line=False)
+            Print.stdout("🪄  Finalizing...", new_line=False)
         elif status == 1:
             Print.stdout("Done.")
 
