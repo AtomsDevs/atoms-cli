@@ -45,4 +45,5 @@ class EnterAtom:
 
         Print.stdout('Launching an Atom Console for {} {}'.format(lookup_by, atom.name))
         command, _, _ = atom.untracked_enter_command
-        CommandUtils.run_command(command)
+        CommandUtils.check_call(command, ignore_errors=True)
+        Print.stdout('Atom Console with {} {} exited.'.format(lookup_by, atom.name))
