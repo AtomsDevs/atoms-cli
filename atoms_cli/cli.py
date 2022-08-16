@@ -7,6 +7,7 @@ from atoms_core.atoms import AtomsBackend
 from atoms_cli.interfaces.distributions import ListDistributions
 from atoms_cli.interfaces.list import ListAtom
 from atoms_cli.interfaces.create import CreateAtom
+from atoms_cli.interfaces.enter import EnterAtom
 
 
 class AtomsCLI:
@@ -29,7 +30,11 @@ class AtomsCLI:
         create_parser.add_argument('-d', '--distribution', help='distribution of choice')
         create_parser.add_argument('-r', '--release', help='distribution release')
         create_parser.add_argument('-a', '--arch', help='distribution architecture')
-        
+
+        enter_parser = subparsers.add_parser('enter', help='enter an existing atom')
+        enter_parser.add_argument('--aid', help='atom id')
+        enter_parser.add_argument('-n', '--name', help='atom name')
+
         self.__args = self.__parser.parse_args()
 
     def run(self):
@@ -39,6 +44,8 @@ class AtomsCLI:
             ListAtom(self.__atoms_backend, self.__args).run()
         elif self.__args.command == 'create':
             CreateAtom(self.__atoms_backend, self.__args).run()
+        elif self.__args.command == 'enter':
+            EnterAtom(self.__atoms_backend, self.__args).run()
         else:
             self.__parser.print_help()
             sys.exit(1)
