@@ -1,4 +1,5 @@
 import sys
+import shlex
 from enum import Enum
 
 from atoms_core.utils.distribution import AtomsDistributionsUtils
@@ -22,6 +23,10 @@ class EnterAtom:
 
         if not self.__args.aid and not self.__args.name:
             Print.stderr('You must specify one of --aid or --name')
+
+        if self.__args.command == "exec":
+            if not self.__args.input:
+                Print.stderr('You must specify --input when executing a command')
     
     def run(self):
         atom = None
@@ -43,7 +48,13 @@ class EnterAtom:
             Print.stderr('No atom found with {} {}'.format(lookup_by, self.__args.aid or self.__args.name))
             sys.exit(1)
 
-        Print.stdout('Launching an Atom Console for {} {}'.format(lookup_by, atom.name))
-        command, _, _ = atom.untracked_enter_command
-        CommandUtils.check_call(command, ignore_errors=True)
-        Print.stdout('Atom Console with {} {} exited.'.format(lookup_by, atom.name))
+        if self.__args.command == "enter":
+            Print.stdout('Launching an Atom Console for {} {}'.format(lookup_by, atom.name))
+            command, _, _ = atom.untracked_enter_command
+            CommandUtils.check_call(command, ignore_errors=True)
+            Print.stdout('Atom Console with {} {} exited.'.format(lookup_by, atom.name))
+        elif self.__args.command == "exec":
+            Print.stdout('Executing a command in {} {}'.format(lookup_by, atom.name))
+            command, _, _ = atom.generate_command(self.__args.input, track_exit=False)
+            CommandUtils.check_call(command, ignore_errors=True)
+            Print.stdout('Command executed in {} {}'.format(lookup_by, atom.name))

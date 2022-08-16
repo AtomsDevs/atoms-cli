@@ -35,6 +35,12 @@ class AtomsCLI:
         enter_parser.add_argument('--aid', help='atom id')
         enter_parser.add_argument('-n', '--name', help='atom name')
 
+        exec_parser = subparsers.add_parser('exec', help='execute a command in an existing atom')
+        exec_parser.add_argument('--aid', help='atom id')
+        exec_parser.add_argument('-n', '--name', help='atom name')
+        exec_parser.add_argument('input', nargs=argparse.REMAINDER)
+
+
         self.__args = self.__parser.parse_args()
 
     def run(self):
@@ -44,7 +50,7 @@ class AtomsCLI:
             ListAtom(self.__atoms_backend, self.__args).run()
         elif self.__args.command == 'create':
             CreateAtom(self.__atoms_backend, self.__args).run()
-        elif self.__args.command == 'enter':
+        elif self.__args.command in ['enter', 'exec']:
             EnterAtom(self.__atoms_backend, self.__args).run()
         else:
             self.__parser.print_help()
