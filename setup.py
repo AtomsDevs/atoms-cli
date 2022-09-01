@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Atoms CLI',
-    version='0.1',
+    version='1.0.0',
     packages=find_packages(),
     url='https://github.com/AtomsDevs/atoms-cli',
     license='GPL-3.0-only',
