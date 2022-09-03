@@ -1,4 +1,5 @@
 import sys
+import datetime
 
 from atoms_cli.utils.print import Print
 from atoms_cli.utils.generic import emojify_atom_name
@@ -37,11 +38,11 @@ class ListAtom:
 
             _name = atom.name
             _row = [
-                atom.aid,
+                atom.short_aid,
                 emojify_atom_name(atom),
                 atom.distribution.name,
-                atom.creation_date, 
-                atom.update_date
+                datetime.datetime.fromisoformat(atom.creation_date).strftime("%Y-%m-%d %H:%M"),
+                datetime.datetime.fromisoformat(atom.update_date).strftime("%Y-%m-%d %H:%M"),
             ]
 
             if self.__args.type in ["container", "all"]:

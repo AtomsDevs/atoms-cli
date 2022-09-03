@@ -35,7 +35,7 @@ class EnterAtom:
         for _atom in self.__atoms_backend.atoms.values():
             if self.__args.aid:
                 lookup_by = 'aid'
-                if _atom.aid == self.__args.aid:
+                if _atom.aid.startswith(self.__args.aid):
                     atom = _atom
                     break
             elif self.__args.name:
