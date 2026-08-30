@@ -1,0 +1,6 @@
+[Plugin]
+Loader=C
+Module=atoms-cli-test-provider
+Name=Test provider
+X-Atoms-Provider-ABI=1
+X-Atoms-Provider-Id=test

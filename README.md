@@ -1,13 +1,15 @@
 # Atoms CLI
-Atoms CLI allows you to create and manage your atoms via the command line.
+Atoms CLI creates and manages environments through installed Atoms providers.
 
 [![CodeFactor](https://www.codefactor.io/repository/github/atomsdevs/atoms-cli/badge)](https://www.codefactor.io/repository/github/atomsdevs/atoms-cli)
 
 ## Dependencies
-- `tabulate`
-- `atoms-core`
+- `atoms-core 2`
+- An Atoms provider
 
 ## Install
 ```bash
-python setup.py install  # --user for user-local install
+meson setup build
+meson compile -C build
+meson install -C build
 ```
