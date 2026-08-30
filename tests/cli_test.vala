@@ -16,6 +16,8 @@ private string run (string[] arguments) {
         string? output;
         string? errors;
         process.communicate_utf8 (null, null, out output, out errors);
+        if (!process.get_successful ())
+            Test.message ("%s: %s", string.joinv (" ", argv), errors ?? "");
         assert_true (process.get_successful ());
         assert_true (errors == "");
         return output ?? "";
@@ -26,19 +28,21 @@ private string run (string[] arguments) {
 
 private void test_commands () {
     assert_true (run ({ "providers" }).contains ("test\tTest\tyes"));
-    assert_true (run ({ "distributions" }).contains ("Example\t1"));
-    assert_true (run ({ "list" }).contains ("environment-test"));
-    assert_true (run ({ "create", "Example", "Created environment" }).contains (
+    assert_true (run ({ "distributions", "--provider", "test" }).contains ("Example\t1"));
+    assert_true (run ({ "list", "--provider", "test" }).contains ("environment-test"));
+    assert_true (run ({ "create", "--provider", "test", "Example", "Created environment" }).contains (
         "created\tCreated environment"
     ));
-    assert_true (run ({ "processes", "environment-test" }).contains (
+    assert_true (run ({ "processes", "--provider", "test", "environment-test" }).contains (
         "42\t1.5%\t2.0 MiB\t/bin/bash"
     ));
-    assert_true (run ({ "signal", "environment-test", "42", "TERM" }) == "");
-    assert_true (run ({ "stop", "environment-test" }) == "");
-    assert_true (run ({ "delete", "environment-test" }) == "");
+    assert_true (run ({ "signal", "--provider", "test", "environment-test", "42", "TERM" }) == "");
+    assert_true (run ({ "stop", "--provider", "test", "environment-test" }) == "");
+    assert_true (run ({ "delete", "--provider", "test", "environment-test" }) == "");
     assert_true (run ({
         "exec",
+        "--provider",
+        "test",
         "environment-test",
         "--",
         "/usr/bin/printf",
