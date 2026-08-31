@@ -48,7 +48,8 @@ namespace Atoms {
 
         public string[] shell_argv (Environment environment,
                                     string command,
-                                    string[] arguments) throws Error {
+                                    string[] arguments,
+                                    bool terminal) throws Error {
             string[] argv = new string[arguments.length + 1];
             argv[0] = command;
             for (int i = 0; i < arguments.length; i++)
@@ -56,11 +57,40 @@ namespace Atoms {
             return argv;
         }
 
+        public string[] update_argv (Environment environment) throws Error {
+            return { "/usr/bin/printf", "updated" };
+        }
+
         public async Environment update_policy (
             Environment environment,
             Cancellable? cancellable = null
         ) throws Error {
             return environment;
+        }
+
+        public async ArrayList<DesktopApplication> list_applications (
+            Environment environment,
+            Cancellable? cancellable = null
+        ) throws Error {
+            var values = new ArrayList<DesktopApplication> ();
+            values.add (new DesktopApplication (
+                id,
+                "/usr/share/applications/example.desktop",
+                "Example application",
+                "Example",
+                "example",
+                "/usr/bin/example",
+                false
+            ));
+            return values;
+        }
+
+        public async void set_application_exported (
+            Environment environment,
+            DesktopApplication application,
+            bool exported,
+            Cancellable? cancellable = null
+        ) throws Error {
         }
 
         public async ArrayList<ProcessInfo> list_processes (

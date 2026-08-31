@@ -36,6 +36,27 @@ private void test_commands () {
     assert_true (run ({ "processes", "--provider", "test", "environment-test" }).contains (
         "42\t1.5%\t2.0 MiB\t/bin/bash"
     ));
+    assert_true (run ({ "update", "--provider", "test", "environment-test" }) == "updated");
+    assert_true (run ({ "update-all", "--provider", "test" }).contains (
+        "Updating Example environment 1\nupdated"
+    ));
+    assert_true (run ({ "applications", "--provider", "test", "environment-test" }).contains (
+        "no\tExample application\t/usr/share/applications/example.desktop"
+    ));
+    assert_true (run ({
+        "export",
+        "--provider",
+        "test",
+        "environment-test",
+        "/usr/share/applications/example.desktop"
+    }) == "");
+    assert_true (run ({
+        "unexport",
+        "--provider",
+        "test",
+        "environment-test",
+        "/usr/share/applications/example.desktop"
+    }) == "");
     assert_true (run ({ "signal", "--provider", "test", "environment-test", "42", "TERM" }) == "");
     assert_true (run ({ "stop", "--provider", "test", "environment-test" }) == "");
     assert_true (run ({ "delete", "--provider", "test", "environment-test" }) == "");

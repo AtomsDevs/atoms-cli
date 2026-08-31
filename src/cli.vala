@@ -112,6 +112,36 @@ namespace Atoms {
                     require_count (parsed, 1, "processes <environment>");
                     yield print_processes (parsed.values[0], parsed.provider_id);
                     return 0;
+                case "update":
+                    require_count (parsed, 1, "update <environment>");
+                    yield update_environment (parsed.values[0], parsed.provider_id);
+                    return 0;
+                case "update-all":
+                    require_count (parsed, 0, "update-all");
+                    yield update_all (parsed.provider_id);
+                    return 0;
+                case "applications":
+                    require_count (parsed, 1, "applications <environment>");
+                    yield print_applications (parsed.values[0], parsed.provider_id);
+                    return 0;
+                case "export":
+                    require_count (parsed, 2, "export <environment> <application>");
+                    yield set_application_exported (
+                        parsed.values[0],
+                        parsed.values[1],
+                        true,
+                        parsed.provider_id
+                    );
+                    return 0;
+                case "unexport":
+                    require_count (parsed, 2, "unexport <environment> <application>");
+                    yield set_application_exported (
+                        parsed.values[0],
+                        parsed.values[1],
+                        false,
+                        parsed.provider_id
+                    );
+                    return 0;
                 case "signal":
                     require_count (parsed, 3, "signal <environment> <pid> <signal>");
                     int pid;
@@ -208,7 +238,8 @@ namespace Atoms {
             string[] argv = selected.provider.shell_argv (
                 selected.environment,
                 command,
-                arguments
+                arguments,
+                command == "/bin/bash" && "-i" in arguments
             );
             Posix.execvp (argv[0], argv);
             throw new CoreError.PROVIDER_FAILED (
@@ -229,6 +260,68 @@ namespace Atoms {
                     process.memory_label (),
                     process.command
                 );
+        }
+
+        private async void update_environment (string selector,
+                                               string provider_id) throws Error {
+            var selected = yield find_environment (selector, provider_id);
+            run_update (selected.provider.update_argv (selected.environment));
+        }
+
+        private async void update_all (string provider_id) throws Error {
+            foreach (var provider in providers (provider_id)) {
+                var environments = yield provider.list_environments ();
+                foreach (var environment in environments) {
+                    stdout.printf ("Updating %s\n", environment.display_name ());
+                    stdout.flush ();
+                    run_update (provider.update_argv (environment));
+                }
+            }
+        }
+
+        private void run_update (string[] argv) throws Error {
+            var launcher = new SubprocessLauncher (SubprocessFlags.STDIN_INHERIT);
+            var process = launcher.spawnv (argv);
+            process.wait_check ();
+        }
+
+        private async void print_applications (string selector,
+                                               string provider_id) throws Error {
+            var selected = yield find_environment (selector, provider_id);
+            var applications = yield selected.provider.list_applications (
+                selected.environment
+            );
+            stdout.printf ("EXPORTED\tNAME\tID\n");
+            foreach (var application in applications)
+                stdout.printf (
+                    "%s\t%s\t%s\n",
+                    application.exported ? "yes" : "no",
+                    application.name,
+                    application.id
+                );
+        }
+
+        private async void set_application_exported (string selector,
+                                                     string application_id,
+                                                     bool exported,
+                                                     string provider_id) throws Error {
+            var selected = yield find_environment (selector, provider_id);
+            var applications = yield selected.provider.list_applications (
+                selected.environment
+            );
+            foreach (var application in applications) {
+                if (application.id != application_id)
+                    continue;
+                yield selected.provider.set_application_exported (
+                    selected.environment,
+                    application,
+                    exported
+                );
+                return;
+            }
+            throw new CoreError.NOT_FOUND (
+                "application not found: %s".printf (application_id)
+            );
         }
 
         private async void signal_process (string selector,
@@ -340,6 +433,11 @@ namespace Atoms {
                 "  enter <environment>\n" +
                 "  exec <environment> -- <command> [arguments]\n" +
                 "  processes <environment>\n" +
+                "  update <environment>\n" +
+                "  update-all\n" +
+                "  applications <environment>\n" +
+                "  export <environment> <application>\n" +
+                "  unexport <environment> <application>\n" +
                 "  signal <environment> <pid> <signal>\n" +
                 "  stop <environment>\n" +
                 "  delete <environment>\n"
